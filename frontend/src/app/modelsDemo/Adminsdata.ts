@@ -2,13 +2,13 @@ export var Admins = [
 {
     'username' : 'madibeng masike',
      'email' : 'madibengmasike@gmail.com',
-     'password' : 'masike133#'
+     'password' : 'Masike133#'
 }
 , 
 {
     'username' : 'tebogo masike',
     'email' : 'tebogomasike@gmail.com',
-    'password' : 'tebzamasike1443#'
+    'password' : 'Tebzamasike1443#'
 }
 
 ]

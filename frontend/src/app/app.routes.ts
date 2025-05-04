@@ -6,9 +6,11 @@ import { RegisterplayerpageComponent } from './pages/registerplayerpage/register
 import { PlayerpageComponent } from './pages/playerpage/playerpage.component';
 
 export const routes: Routes = [
+    
     {path:'' ,  title: ' homepage' , component : HomepageComponent},
     {path:'registeradmin' , title:'Registeradminpage' , component : RegisterpageComponent },
     {path:'enterguardian' , title:'enterguardianpage' , component: EnterguardianPageComponent },
     {path:'registerplayer' , title:'registerplayerpage' , component : RegisterplayerpageComponent  },
-    {path:'player' , title:'playerpage' , component : PlayerpageComponent  },
+    {path:'player/:number/:name' , title:'playerpage' , component : PlayerpageComponent  },
+
 ];

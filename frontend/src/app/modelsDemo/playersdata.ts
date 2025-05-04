@@ -3,7 +3,7 @@ export const players =[
     id: 1,
     firstname: "Lesedi",
     lastname: "Masike",
-    position: "",
+    position: "Striker",
     age: "12 years old",
     guardian_name: "Dineo Masike",
     guardian_phone: "+27831234567"
@@ -13,7 +13,7 @@ export const players =[
     firstname: "Onkabetse",
     lastname: "Hlogwane",
     position: "Striker",
-    age: "15 years old",
+    age: "15 years old",  
     guardian_name: "Kagiso Hlogwane",
     guardian_phone: "+27821234567"
   },

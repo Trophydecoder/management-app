@@ -33,9 +33,18 @@ module.exports.create = function (req, res) {
           return res.status(404).
           send({ message: `Incorrect username or password` });
       }
-    // If email exists, compare the hashed password
-    const founduser = results[0]; // fetch first user with that email by index which start with  0 
 
+
+
+    const charactersallowed = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]$/
+    if (!charactersallowed.test(req.body.password)) {
+     console.log('Password  must include a capital letter, a number, and a special character')
+     return res.status(404).
+     send({ message: `Password  must include a capital letter, a number, and a special character.` });  //Stop function if password dont passs test (something i wasnt aware of)
+   }
+
+   // If email exists, compare the hashed password
+   const founduser = results[0]; // fetch first user with that email by index which start with  0 
     const passwordMatches = await bcrypt.compare(req.body.password, founduser.password);
 //if the password does not match 
     if (!passwordMatches) {
@@ -47,7 +56,8 @@ module.exports.create = function (req, res) {
       const tokenPayload = {
         id: founduser.id,
         email: founduser.email,
-        username: founduser.username
+        username: founduser.username,
+        password:  founduser.password
       };
       const token = jwt.sign(tokenPayload, secret, { expiresIn });
       

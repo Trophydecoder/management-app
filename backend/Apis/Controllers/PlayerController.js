@@ -27,6 +27,20 @@ module.exports.create = function (req, res) {
       return res.status(409).
       send({ message: `Player with ID ${req.body.id} already exists. CANNOT ADD.` });
     }
+    if ( req.body.guardian_phone) {
+      const trimmedNumber = req.body.guardian_phone.trim();
+      const onlynumbersEx = /^(0|\+27)\d+$/
+      if (!onlynumbersEx.test(trimmedNumber)) {
+
+        return res.status(409).
+        send({ message: `invalid cellnumber` });
+         // Stop function if phone is invalid(something i wasnt aware of)
+      }
+    
+      if (req.body.guardian_phone.startsWith('0')) {
+        req.body.guardian_phone = req.body.guardian_phone.replace(/^0/, '+27');
+      }
+    }
 
     const playerWithSamePhone = results.find(player => player.guardian_phone === req.body.guardian_phone);
     if (playerWithSamePhone) {
