@@ -16,6 +16,16 @@ module.exports.create = function (req, res) {
     req.body.username
 ];
 
+   
+
+//we only allow space and string for USERNAME you must not add numbers//
+const onlystringandspaceex = /^[A-Za-z\s]+$/; //only allows string and space
+if (!onlystringandspaceex.test(req.body.username)) {
+  console.log('for names ,Only allows alphabetic letters');
+      return res.status(400).send({
+        message: 'for names ,Only allows alphabetic letters',
+      })
+    }
   // Check if email already exists
   database.query(checkSql, check, async (error, results) => {
     if (error) {
@@ -28,23 +38,26 @@ module.exports.create = function (req, res) {
       return res.status(404).
       send({ message: `Incorrect username or password` });
     }
-    {
-      if (req.body.username !== founduser.username ){
-          return res.status(404).
-          send({ message: `Incorrect username or password` });
-      }
+    
 
 
-
-    const charactersallowed = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]$/
+    const charactersallowed = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{8,}$/;
     if (!charactersallowed.test(req.body.password)) {
-     console.log('Password  must include a capital letter, a number, and a special character')
-     return res.status(404).
-     send({ message: `Password  must include a capital letter, a number, and a special character.` });  //Stop function if password dont passs test (something i wasnt aware of)
-   }
+      console.log('Password must include a capital letter, a number, a special character, and be at least 8 characters long.');
+      return res.status(400).send({
+        message: 'Password must include a capital letter, a number, a special character, and be at least 8 characters long.',
+      });
+    }
 
    // If email exists, compare the hashed password
-   const founduser = results[0]; // fetch first user with that email by index which start with  0 
+   const founduser = results[0]; 
+   
+   {
+    if (req.body.username !== founduser.username ){
+        return res.status(404).
+        send({ message: `Incorrect username or password` });
+    }
+// fetch first user with that email by index which start with  0 
     const passwordMatches = await bcrypt.compare(req.body.password, founduser.password);
 //if the password does not match 
     if (!passwordMatches) {

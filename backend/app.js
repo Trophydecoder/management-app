@@ -10,6 +10,7 @@ const PlayersRouter = require('./routes/PlayersRouter');
 const ApiRouter = require ('./Apis/ApiRoutes/Routes')
 const registerRouter = require ('./Apis/ApiRoutes/RegisterRoutes')
 const  getOneRouter = require ('./Apis/ApiRoutes/Getoneroute')
+const whatsappRoutes = require('./Apis/ApiRoutes/whatsappRoutes');
 var app = express();
 
 // view engine setup
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+app.use('/api', whatsappRoutes);
 app.use('/api', getOneRouter) //it falls unders PLAYERS just that i can't use two POSTS on one page  so i created this one
 app.use('/api', loginRouter)
 app.use('/api', registerRouter)

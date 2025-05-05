@@ -7,13 +7,7 @@ const saltRounds = 10; // You can use 10-12
 
 
 module.exports.create = function (req, res) {
-  const checkSql = 'SELECT * FROM register WHERE username = ? OR email = ?';
-  const Sql = 'INSERT INTO register (username, email, password) VALUES (?, ?, ?)';
 
-  const check = [
-    req.body.username, 
-    req.body.email,
-]
   // Check if username or email already exists
   database.query(checkSql,check, async (error, results) => {
     if (error) {
@@ -24,6 +18,14 @@ module.exports.create = function (req, res) {
     if (usernameFind) {
       return res.status(404)
       .send({ message: `Username ${req.body.username} already exists.` });
+    }
+    //we only allow space and string for USERNAME you must not add numbers//
+const onlystringandspaceex = /^[A-Za-z\s]+$/; //only allows string and space
+if (!onlystringandspaceex.test(req.body.username)) {
+  console.log('for names ,Only allows alphabetic letters');
+      return res.status(400).send({
+        message: 'for names ,Only allows alphabetic letters',
+      })
     }
 
     let emailFind = results.find(user => user.email === req.body.email);
