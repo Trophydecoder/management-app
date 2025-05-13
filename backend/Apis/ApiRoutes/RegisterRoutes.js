@@ -5,7 +5,7 @@ const RegisterController = require ('../Controllers/RegisterController')
 /* POST*/
 router.post('/register', RegisterController.create);
 
-
+router.get('/register', RegisterController.readAll);
 
 
 

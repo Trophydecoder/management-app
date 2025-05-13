@@ -5,14 +5,19 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class PlayerService {
+export class UseradminService {
  
-  private apiUrl = 'http://localhost:3000/api/players'; 
+  private apiUrl = 'http://localhost:3000/api/loginUser';
+
 
   constructor(private http: HttpClient) {}  
 
-getPlayerInfo(number: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/Oneplayer`,{ guardian_phone: number });
-}
+  GetloginAdmin(credentials: any): Observable<any> {
+    return this.http.post(this.apiUrl, credentials);
+  }
 
 }
+
+
+
+

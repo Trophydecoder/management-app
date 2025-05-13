@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const cors = require('cors');
 
 const loginRouter = require ('./Apis/ApiRoutes/loginRouter')
 const PlayersRouter = require('./routes/PlayersRouter');
@@ -23,13 +23,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+}));
 app.use('/api', whatsappRoutes);
 app.use('/api', getOneRouter) //it falls unders PLAYERS just that i can't use two POSTS on one page  so i created this one
 app.use('/api', loginRouter)
 app.use('/api', registerRouter)
 app.use('/Players',PlayersRouter);
 app.use('/api', ApiRouter)
+
 
 
 // catch 404 and forward to error handler

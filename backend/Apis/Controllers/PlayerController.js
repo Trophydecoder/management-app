@@ -5,14 +5,13 @@ const Players = require('../../models/models');
 
 
 
-/* POST*/
+/* POST*///DOnE!!!!!!!!!
 module.exports.create = function (req, res) {
-  const checkSql = 'SELECT * FROM players WHERE id = ? OR guardian_phone = ?';
-  const insertSql = 'INSERT INTO players (id, firstname, lastname, position, age, guardian_name, guardian_phone) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  const checkSql = 'SELECT * FROM players WHERE guardian_phone = ?';
+  const insertSql = 'INSERT INTO players (firstname, lastname, position, age, guardian_name, guardian_phone) VALUES ( ?, ?, ?, ?, ?, ?)';
 
 
   checking =[
-    req.body.id, 
     req.body.guardian_phone
   ]
   // check if player already exists by ID or guardian_phone
@@ -22,11 +21,7 @@ module.exports.create = function (req, res) {
       return res.status(500).send('Couldn’t check existing player');
     }
 
-    const playerWithSameId = results.find(player => player.id === req.body.id);
-    if (playerWithSameId) {
-      return res.status(409).
-      send({ message: `Player with ID ${req.body.id} already exists. CANNOT ADD.` });
-    }
+    
     if ( req.body.guardian_phone) {
       const trimmedNumber = req.body.guardian_phone.trim();
       const onlynumbersEx = /^(0|\+27)\d+$/
@@ -50,7 +45,7 @@ module.exports.create = function (req, res) {
 
     // Insert new player
     const values = [
-      req.body.id,
+
       req.body.firstname,
       req.body.lastname,
       req.body.position,
@@ -90,7 +85,7 @@ if (!onlynumbersandplus.test(req.body.guardian_phone)) {
         return res.status(500).send('Couldn’t create new player');
       }
 
-      res.status(201).
+      res.status(200).
       send({ message: 'Player added successfully' });
     });
   });
@@ -112,7 +107,7 @@ if (!onlynumbersandplus.test(req.body.guardian_phone)) {
 
 
 
-/*GET ALL*/
+/*GET ALL*///DOnE!!!!!!!!!
 //i wanted to do paginations but this applications doesn't have that //
 module.exports.readAll = function(req, res) {
    const sql = 'SELECT * FROM players ORDER BY id'
@@ -121,7 +116,7 @@ module.exports.readAll = function(req, res) {
       if (error) {
         console.error('Error fetching players');
         return res.status(500)
-        .send('Couldnt fetch players');
+        .send(`Couldn't fetch players`);
       }
       else{
         res.status(200)
@@ -135,49 +130,61 @@ module.exports.readAll = function(req, res) {
 
 
 /* PUT*/
-/* PUT */
 module.exports.Update = function (req, res) {
-  const checkSql = 'SELECT * FROM players WHERE id = ? AND guardian_phone = ?';
   const updateSql = `
     UPDATE players 
     SET firstname = ?, lastname = ?, position = ?, age = ?, guardian_name = ?, guardian_phone = ? 
-    WHERE id = ? AND guardian_phone = ?
+
   `;
 
-  const paramId = Number(req.params.id);
-  const { firstname, lastname, position, age, guardian_name, guardian_phone } = req.body;
+  const {  firstname, lastname, position, age, guardian_name, guardian_phone } = req.body;
 
-  // First, check if the player exists with both ID and guardian_phone
-  database.query(checkSql, [paramId, guardian_phone], (error, results) => {
-    if (error) {
-      console.error('Error checking player ID and guardian phone:', error);
-      return res.status(500).send('Couldn’t check player info');
+  if ( !guardian_phone) {
+    return res.status(400).send({ message: 'Player ID and guardian phone are required' });
+  }
+
+  // Format and validate phone
+  let formattedPhone = guardian_phone.trim();
+  if (formattedPhone.startsWith('0')) {
+    formattedPhone = formattedPhone.replace(/^0/, '+27');
+  }
+
+  const validPhoneRegex = /^\+27\d{9}$/;
+  if (!validPhoneRegex.test(formattedPhone)) {
+    return res.status(400).send({ message: 'Invalid phone number. Must start with +27 and be 9 digits long.' });
+  }
+
+  // Check if the phone number is used by another player
+  const duplicateSql = 'SELECT * FROM players WHERE guardian_phone = ? ';
+  database.query(duplicateSql, [formattedPhone], (err, results) => {
+    if (err) {
+      console.error('Error checking for duplicate phone:', err);
+      return res.status(500).send('Database error');
     }
 
-    if (results.length === 0) {
-      return res.status(404).send({ message: `Player with ID ${paramId} and guardian phone ${guardian_phone} not found.` });
+    if (results.length < 0) {
+      return res.status(409).send({ message: 'Phone number is already used by another player.' });
     }
-const findGuardian = guardian_phone.find(phone => phone.guardian_phone == guardian_phone)
-if(findGuardian){
-  console.error('cant accept duplicates guardian names', error);
-  return res.status(500).send('cant accept duplicates guardian names');
-}
-    // Now update
-    const updatedPlayer = [
+
+    // Perform the update
+    const updateValues = [
       firstname,
       lastname,
       position,
       age,
       guardian_name,
-      guardian_phone,
-      paramId,
-   
+      formattedPhone,
+
     ];
 
-    database.query(updateSql, updatedPlayer, (error, updateResult) => {
+    database.query(updateSql, updateValues, (error, result) => {
       if (error) {
         console.error('Error updating player:', error);
-        return res.status(500).send('Couldn’t update player');
+        return res.status(500).send('Failed to update player');
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ message: 'Player not found' });
       }
 
       return res.status(200).send({ message: 'Player updated successfully' });
@@ -198,43 +205,30 @@ if(findGuardian){
 
 
 
-
-
-
 /* DELETE ONE*/
 module.exports.deleteOne = function (req, res) {
-  let id = Number(req.params.id);
-  const checkSql = 'SELECT * FROM players WHERE id = ?';
-  const Sql = 'DELETE FROM players WHERE id = ?';
+  let phone = decodeURIComponent(req.params.guardian_phone).trim();
 
-  // First, check if the player exists if player exists we go delete
-  database.query(checkSql, id, (error, Results) => {
-    if (error) {
-      return res.status(500).send('Error checking player existence');
+  if (phone.startsWith('0')) {
+    phone = phone.replace(/^0/, '+27');
+  }
+
+  const checkSql = 'SELECT * FROM players WHERE guardian_phone = ?';
+  const deleteSql = 'DELETE FROM players WHERE guardian_phone = ?';
+
+  database.query(checkSql, [phone], (err, results) => {
+    if (err) return res.status(500).send('Error checking player');
+
+    if (results.length === 0) {
+      return res.status(404).send(`No player with phone: ${phone}`);
     }
 
-    if (Results.length === 0) {
-      // if results legnth equals 0 which means it doesn't exist we send a resopond
-      return res.status(404).send(`Player with ID ${id} does not exist`);
-    }
-
-    // if results length is not equal to 0 which means Player exists, proceed to delete
-    database.query(Sql, id, (error, results) => {
-      if (error) {
-        return res.status(500).send('Error, can’t delete player');
-      }
-      if(results){
-        res.status(200).send(`Successfully deleted player with ID: ${id}`);
-      }
-      else{
-        res.status(404).send(`player with id ${id} dont exist`);
-      }
-
+    database.query(deleteSql, [phone], (err) => {
+      if (err) return res.status(500).send('Delete error');
+      res.status(200).send(`Deleted player with phone: ${phone}`);
     });
   });
 };
-
-  
   
     
     

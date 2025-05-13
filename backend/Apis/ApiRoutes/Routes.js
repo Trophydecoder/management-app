@@ -9,10 +9,10 @@ router.post('/players', PlayerController.create);
 router.get('/players', PlayerController.readAll);
 
 /* PUT*/
-router.put('/players/:id', PlayerController.Update);
+router.put('/players', PlayerController.Update);
 
 /* DELETE ONE*/
-router.delete('/players/:id', PlayerController.deleteOne);
+router.delete('/players/:guardian_phone', PlayerController.deleteOne)
 
 
 
