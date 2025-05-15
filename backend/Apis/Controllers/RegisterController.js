@@ -7,12 +7,13 @@ const saltRounds = 10; // You can use 10-12
 
 
 module.exports.create = function (req, res) {
-   
-  if (!req.body.username || !req.body.email || !req.body.password) {
+  const { username, email, password } = req.body; // ✅ Destructure these from req.body
+
+  if (!username || !email || !password) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  //allow strings and spaces
+  // Allow strings and spaces
   const onlyAlphaSpaces = /^[A-Za-z\s]+$/;
   if (!onlyAlphaSpaces.test(username)) {
     return res.status(400).json({ message: 'Username can only contain letters and spaces' });
@@ -39,6 +40,7 @@ module.exports.create = function (req, res) {
         return res.status(409).json({ message: `Username ${username} already exists.` });
       }
 
+      const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       const insertSql = 'INSERT INTO register (username, email, password) VALUES (?, ?, ?)';
@@ -49,8 +51,9 @@ module.exports.create = function (req, res) {
           console.error('Insert Error:', err);
           return res.status(400).json({ error: 'Could not register admin' });
         }
-
-        return res.status(201).json({ message: 'Admin registered successfully' });
+else{
+  return res.status(201).json({ message: 'Admin registered successfully' });
+}
       });
     });
   } catch (err) {
@@ -58,6 +61,7 @@ module.exports.create = function (req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 /*GET ALL*///DOnE!!!!!!!!!
 //i wanted to do paginations but this applications doesn't have that //

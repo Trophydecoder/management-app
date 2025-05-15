@@ -12,7 +12,7 @@ router.get('/players', PlayerController.readAll);
 router.put('/players', PlayerController.Update);
 
 /* DELETE ONE*/
-router.delete('/players/:guardian_phone', PlayerController.deleteOne)
+router.delete('/players/:guardian_phone', PlayerController.deleteOne);
 
 
 

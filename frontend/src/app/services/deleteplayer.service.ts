@@ -14,5 +14,5 @@ export class DeleteplayerService {
   deletePlayer(phone: string): Observable<any> {
     return this.http.delete(`http://localhost:3000/api/players/${encodeURIComponent(phone)}`);
   }
-  
+
 }

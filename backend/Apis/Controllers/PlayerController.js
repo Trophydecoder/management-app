@@ -201,11 +201,6 @@ module.exports.Update = function (req, res) {
 
 
 
-
-
-
-
-/* DELETE ONE*/
 module.exports.deleteOne = function (req, res) {
   let phone = decodeURIComponent(req.params.guardian_phone).trim();
 
@@ -217,21 +212,18 @@ module.exports.deleteOne = function (req, res) {
   const deleteSql = 'DELETE FROM players WHERE guardian_phone = ?';
 
   database.query(checkSql, [phone], (err, results) => {
-    if (err) return res.status(500).send('Error checking player');
-
+    if (err) return res.status(500).
+    send('Error checking player');
     if (results.length === 0) {
-      return res.status(404).send(`No player with phone: ${phone}`);
+      return res.status(404).
+      send(`No player with phone: ${phone}`);
     }
 
     database.query(deleteSql, [phone], (err) => {
-      if (err) return res.status(500).send('Delete error');
-      res.status(200).send(`Deleted player with phone: ${phone}`);
+      if (err) return res.status(500).
+      send('Delete error');
+      res.status(200).
+      json({ message: "Deleted player successfully" })
     });
   });
 };
-  
-    
-    
- 
-
- 

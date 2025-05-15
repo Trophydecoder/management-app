@@ -13,5 +13,6 @@ export const routes: Routes = [
     {path:'enterguardian' , title:'enterguardianpage' , component: EnterguardianPageComponent },
     {path:'registerplayer' , title:'registerplayerpage' , component : RegisterplayerpageComponent  },
     {path:'player/:number/:name' , title:'playerpage' , component : PlayerpageComponent  },
-    { path: 'player/:guardian_phone/:name', title:'editplayerpage', component: EditplayerpageComponent  }
+    {path:'editplayer/:number/:name' , title:'editplayerpage' , component : EditplayerpageComponent  },
+  
 ];
